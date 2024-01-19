@@ -14,8 +14,8 @@ for game in open('Day2-input.txt', 'r'):
     for draw in game.split(';'):
         draw = draw.split(',')
         for i in draw:
-            i = i.strip().split()
-            g[i[1]] = max(g[i[1]], int(i[0]))
+            count, color = i.strip().split()
+            g[color] = max(g[color], int(count))
     PowerSum += (g['red'] * g['green'] * g['blue'])
 
 print("SUM OF GAME SETS: ", PowerSum)
