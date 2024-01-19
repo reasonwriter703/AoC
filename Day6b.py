@@ -1,3 +1,11 @@
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
+
 class race:
     def __init__(r, time, dist):
         r.time = time
@@ -17,3 +25,4 @@ for r in races:
         if dist > r.dist: mrg += 1
     prod *= mrg
     print(prod)
+    print('Time taken:', time.time() - start_time)

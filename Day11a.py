@@ -1,3 +1,11 @@
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
+
 class planet:
     def __init__(g, i, x, y):
         g.i = i
@@ -36,3 +44,4 @@ for p in P:
         allsteps += steps
         print(str(p.i) + '-' + str(q.i), steps, sep='\t')
 print(allsteps)
+print('Time taken:', time.time() - start_time)

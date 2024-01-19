@@ -1,3 +1,11 @@
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
+
 def sym(tbl, transp = False):
     for y, row in enumerate(tbl):
         try:
@@ -53,3 +61,4 @@ tbl = [list(i) for i in zip(*tbl)]  #transpose
 total += sym(tbl, True)
 
 print(total)
+print('Time taken:', time.time() - start_time)

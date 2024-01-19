@@ -1,4 +1,10 @@
-import re
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
 
 def key(x, y):
     return str(x) + "." + str(y)
@@ -76,3 +82,4 @@ for k in allNums:
 
 print(partNums)
 print(sum(partNums))
+print('Time taken:', time.time() - start_time)

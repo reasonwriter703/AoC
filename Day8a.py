@@ -1,3 +1,11 @@
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
+
 def loopInst(node):
     for i in inst:
         print(node)
@@ -30,3 +38,4 @@ while thisNode != "ZZZ":
     #print(count)
 
 print("RESULT: ", count)
+print('Time taken:', time.time() - start_time)

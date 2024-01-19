@@ -1,3 +1,11 @@
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
+
 class planet:
     def __init__(g, i, x, y):
         g.i = i
@@ -43,29 +51,8 @@ for p in P:
         for i in range(xmax - xmin):
             steps += expansion if tbl[ymax][xmax - i] == "_" else 1
             print(str(p.i) + '-' + str(q.i), p.y - i, q.x, tbl[p.y - i][q.x - 1], sep='\t')
-
-#         if q.x < p.x:
-#             steps += sum(1 for j in tbl[v][q.x:p.x] if j == ".")
-#             steps += sum(1 for j in tbl[v][q.x:p.x] if j == "_") * expansion
-# #            print("".join(tbl[v][q.x:p.x]))
-#         elif q.x > p.x:
-#             steps += sum(1 for j in tbl[v][p.x:q.x] if j == ".")
-#             steps += sum(1 for j in tbl[v][p.x:q.x] if j == "_") * expansion
-#  #           print("".join(tbl[v][p.x:q.x]))
-#         else:
-#             pass
-
-#         if q.y < p.y:
-#             steps += sum(1 for j in tbl[q.y:p.y][h] if j == ".")
-#             steps += sum(1 for j in tbl[q.y:p.y][h] if j == "_") * expansion
-# #            print("".join(tbl[v][q.x:p.x]))
-#         elif q.y > p.y:
-#             steps += sum(1 for j in tbl[p.y:q.y][h] if j == ".")
-#             steps += sum(1 for j in tbl[p.y:q.y][h] if j == "_") * expansion
-#  #           print("".join(tbl[v][p.x:q.x]))
-#         else:
-#             pass
         
         print(str(p.i) + '-' + str(q.i), steps, sep='\t')
         allsteps += steps
 print(allsteps)
+print('Time taken:', time.time() - start_time)

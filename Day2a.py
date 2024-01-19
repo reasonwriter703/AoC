@@ -1,4 +1,10 @@
-
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
 file1 = open('Day2-input.txt', 'r')
 Lines = file1.readlines()
 
@@ -53,3 +59,4 @@ for d in Draws:
 
 print("Possible Games: ", len(Games))
 print("SUM OF POSSIBLE GAMES: ", sum(Games))
+print('Time taken:', time.time() - start_time)

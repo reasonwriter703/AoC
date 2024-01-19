@@ -1,5 +1,12 @@
-smudge = [True]
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
 
+smudge = [True]
 def smudge_match(row_n, row_p):
     if row_n == row_p:
         return True
@@ -62,5 +69,6 @@ for row in open('Day13-input.txt', 'r'):
 total += sym(tbl)   #repeast sym for last tbl
 
 print(total)
+print('Time taken:', time.time() - start_time)
 
 #38110 is too high

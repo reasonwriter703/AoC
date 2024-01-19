@@ -1,4 +1,11 @@
 import operator
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
 
 file1 = open('Day7-input.txt', 'r')
 Lines = file1.readlines()
@@ -40,3 +47,4 @@ for i, hand in enumerate(H):
     print(i + 1, hand.hand, hand.bet, hand.hexval, hand.matches, sep="\t")
     winnings += int(hand.bet) * (i + 1)
 print(winnings)
+print('Time taken:', time.time() - start_time)

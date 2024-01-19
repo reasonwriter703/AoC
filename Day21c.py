@@ -1,4 +1,11 @@
 import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
+
 def take_step(tbl, y, x):
     if tbl[y][x] != "_": return tbl[y][x]
     try:
@@ -152,7 +159,7 @@ plots += getCount([row[:maplen * 3] for row in tbl7[maplen * 2:maplen * 3]]) * l
 #     print("".join(row))
 #     plots += sum(1 for j in row if j == "O")
 print("steps left:", StepsLeft, "", "filled plots:", plots, sep="\t")
-
+print('Time taken:', time.time() - start_time)
 
 # 602253595426282 is too low
 # 530722872342613

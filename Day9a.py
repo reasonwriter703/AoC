@@ -1,3 +1,11 @@
+import sys
+import os
+import time
+working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inputs")
+if len(sys.argv) > 1: working = sys.argv[1]
+os.chdir( working )
+start_time = time.time()
+
 file1 = open('Day9-input.txt', 'r')
 Lines = file1.readlines()
 Lines[:] = [line.strip() for line in Lines]
@@ -37,3 +45,4 @@ for line in Lines:
     print()
 print(OASIS)
 print(sum(OASIS))
+print('Time taken:', time.time() - start_time)
