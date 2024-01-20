@@ -25,13 +25,28 @@ def take_step(tbl, y, x):
         return "n"
 
     return tbl[y][x]
-def fillmap(y, x, steps):
-    tbl = [list(i) for i in Lines]  # reset matrix
+
+def fillmap(y, x, steps, stretch = ""):
+    if stretch == "x":
+        tbl = [list(i + i) for i in Lines]
+    #    x *= 2
+    elif stretch == "y":
+        tbl = [list(i + i + i) for i in Lines]
+        tbl0 = [list(i + i + i) for i in Lines]
+        for r in tbl0:
+            tbl.append(r)
+    #    x += maplen
+    #    y *= 2
+    else:
+        tbl = [list(i) for i in Lines]  # reset matrix
+    for row in tbl:
+        row[:] = [r.replace("S", "_") for r in row]
+
     tbl[y][x] = "O"     #set new starting point
 
+    # take n steps
     for i in range(steps-1):
         for y, row in enumerate(tbl):
-            if sum(1 for j in row if j == "O") == 0: continue
             for x, col in enumerate(row):
                 tbl[y][x] = take_step(tbl, y, x)
 
@@ -40,33 +55,27 @@ def fillmap(y, x, steps):
             row[:] = [r.replace("n", "O") for r in row]
     #        print("".join(row))
     #    print("")
-    count = getCount(tbl)
-    print("+", count, "", steps, "steps")
-    print("")
-    return count
-def getCount(tbl):
+
     # count finishing positions
     count = 0
     for row in tbl:
-    #    print("".join(row))
+        print("".join(row))
         count += sum(1 for j in row if j == "O")
-    # print("total:", plots, "", "+", count)
-    # print("")
+    print("+", count, "", steps, "steps")
+    print("")
     return count
 
-file1 = open('Day21-input.txt', 'r')
+file1 = open('Day21-demo.txt', 'r')
 Lines = file1.readlines()
 Lines[:] = [line.strip() for line in Lines]
 Lines[:] = [line.replace(".", "_") for line in Lines]
-tbl0 = [list(i) for i in Lines]  #create matrix
+tbl = [list(i) for i in Lines]  #create matrix
 # find S
-for rS, row in enumerate(tbl0):
+for rS, row in enumerate(tbl):
     if "S" in row: break
-for cS, col in enumerate(tbl0[rS]):
+for cS, col in enumerate(tbl[rS]):
     if col == "S": break
-tbl0 = [list(i) for i in Lines]
-tbl0[rS][cS] = "_"
-maplen = len(row)
+
 
 # assuming S is always placed at center...
 # to go from any 1 side to another takes 131 steps
@@ -75,91 +84,46 @@ maplen = len(row)
     # left to right, 5538
     # right to left, 5558
 
-StepsLeft = 26501365
-isOdd = StepsLeft % 2 == 1
-
-tbl1 = []
-tbl7 = []
-for row in tbl0:
-    tbl1.append(row + row + row + row + row + row + row)
-for k in range(7):
-    for row in tbl1:
-        tbl7.append(row.copy())
-
-loop = int(StepsLeft / maplen)
-
-tbl7[int(rS + maplen*3)][int(cS + maplen*3)] = "O"
-# edgesreached = {}
-for z in range(1 + maplen + (StepsLeft % maplen)):
-    for y, row in enumerate(tbl7):
-        for x, col in enumerate(row):
-            tbl7[y][x] = take_step(tbl7, y, x)
-        #     if tbl7[y][x] == "O" and x < maplen:
-        #         edgesreached["W"] = 1
-        #     elif tbl7[y][x] == "O" and x > maplen * 6 - 1:
-        #         edgesreached["E"] = 1
-        #
-        # if y < maplen:
-        #     edgesreached["N"] = 1
-        # elif y > maplen*6 - 1:
-        #     edgesreached["S"] = 1
-
-    for row in tbl7:
-        row[:] = [r.replace("O", "_") for r in row]
-        row[:] = [r.replace("n", "O") for r in row]
-        #print("".join(row))
-
-    StepsLeft -= 1
-    # if (len(edgesreached) == 4) and (StepsLeft % 2 == isOdd): break
-
+StepsLeft = 50 #26501365
+isEven = (StepsLeft % 2 == 0)
+#StepsLeft -= rS + 1  #start at center # from center, all 4 sides are reached on the 66th step.
 plots = 0
-map0 = getCount([row[maplen * 3:maplen * 4] for row in tbl7[maplen * 3:maplen * 4]])  # 7354
-map1 = getCount([row[maplen * 2:maplen * 3] for row in tbl7[maplen * 3:maplen * 4]])  # 7362 (14,716 total)
-this_ring = 0
+maplen = len(row)   #131
 
-n = 3
-while StepsLeft > maplen:
-    # skip via centered square formula
-    last_ring = this_ring
-    this_ring =  n * n + ((n - 1) * (n - 1))
-    plots += (map0 if n % 2 == 0 else map1) * (this_ring - last_ring)
+#get amt of plots on completely filled maps
+evenp = fillmap(rS, cS, maplen*2)       #7354
+oddp = fillmap(rS, cS, (maplen*2)-1)    #7362
+
+# skip via centered square formula
+n = 1
+fullmaps = 0
+while StepsLeft > maplen*2:
+    lastring = fullmaps
+    fullmaps =  n * n + ((n - 1) * (n - 1))
+    plots += (evenp if n % 2 == isEven else oddp) * (fullmaps - lastring)
     StepsLeft -= maplen
-    print("steps left:", StepsLeft, "", "filled plots:", plots ,"n:", n, sep="\t")
     n += 1
+#    print(StepsLeft, plots, sep="\t")
+print("steps left:", StepsLeft, "", "filled plots:", plots ,"n:", n, sep="\t")
+n = n-2 # save for edge calcs
+if n > 0:
+    #EDGES
+    plots += fillmap(maplen-1,0, StepsLeft, "x")*n
+    plots += fillmap(0,0, StepsLeft, "x")*n
+    plots += fillmap(0,maplen*2-1, StepsLeft, "x")*n
+    plots += fillmap(maplen-1,maplen*2-1, StepsLeft, "x")*n
 
-while StepsLeft > 0:
-    for y, row in enumerate(tbl7):
-        for x, col in enumerate(row):
-            tbl7[y][x] = take_step(tbl7, y, x)
-
-    for row in tbl7:
-        row[:] = [r.replace("O", "_") for r in row]
-        row[:] = [r.replace("n", "O") for r in row]
-        if StepsLeft == 1: print("".join(row))
-
-    StepsLeft -= 1
-
-#TOP 2 x 7
-plots += getCount(tbl7[:maplen*2])
-#LEFT 2
-plots += getCount([row[:maplen*2] for row in tbl7[maplen*3:maplen*4]])
-#RIGHT 2
-plots += getCount([row[maplen*5:maplen*7] for row in tbl7[maplen*3:maplen*4]])
-#BOTTOM 2 x 7
-plots += getCount(tbl7[maplen*5:maplen*7])
-
-# EDGES
-plots += getCount([row[maplen * 4:maplen * 7] for row in tbl7[maplen * 2:maplen * 3]]) * loop  # NE
-plots += getCount([row[maplen * 4:maplen * 7] for row in tbl7[maplen * 4:maplen * 5]]) * loop  # SE
-plots += getCount([row[:maplen * 3] for row in tbl7[maplen * 4:maplen * 5]]) * loop  # SW
-plots += getCount([row[:maplen * 3] for row in tbl7[maplen * 2:maplen * 3]]) * loop  # NW
-
-# count original 7x7
-# for row in tbl7:
-#     print("".join(row))
-#     plots += sum(1 for j in row if j == "O")
-print("steps left:", StepsLeft, "", "filled plots:", plots, sep="\t")
+StepsLeft -= rS + 1 #add center steps back in
+#TOP 3x2
+plots += fillmap(0,cS + maplen, StepsLeft, "y")
+#BOTTOM 3x2
+plots += fillmap(maplen*2-1,cS + maplen, StepsLeft, "y")
+#LEFT
+plots += fillmap(rS,0, StepsLeft, "x")
+#RIGHT
+plots += fillmap(rS,maplen*2-1, StepsLeft, "x")
+print("finishing plots:", plots)
 print('Time taken:', time.time() - start_time)
 
 # 602253595426282 is too low
-# 530722872342613
+# 602250651607978
