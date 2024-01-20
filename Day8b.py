@@ -5,10 +5,9 @@ working= os.environ.get("WORKING_DIRECTORY",os.path.dirname(sys.argv[0]) + "/inp
 if len(sys.argv) > 1: working = sys.argv[1]
 os.chdir( working )
 start_time = time.time()
+
 inst = "LRRLRRLRLLLRLLRLRRLRRLRRLRRLLRLLRRRLRRRLRRLLLRLRRLLLLLRRRLRRRLRRRLRRLRRLRLRLRLRLRRRLRRRLRRRLRRLRRLRLRLRRLLRRRLLRRLRRLRRRLRLLRRLRRLRRRLRRRLRRRLRRRLRRLLLRRRLLRRLLLRRLRRLLRRLRRRLRRLRRLRRRLRRLLLRLRRRLLRRRLRLRRLRLRLRLRRRLRLRLRRLLRRLRRLRRLRRLLRLRLRRRLRRLRRLRRLRLRRRLRRLRLLRRLLRRLRLLLRLLRRRLRLRLLRRRR"
 file1 = open('Day8-input.txt', 'r')
-# inst = "LR"
-# file1 = open('Day8-demo.txt', 'r')
 
 #load each L/R element into key-value pairs
 Lines = file1.readlines()
@@ -23,18 +22,28 @@ print("Starting nodes:", len(AllNodes))
 
 
 count = 0
+factors = []
+for i in range(len(AllNodes)):
+    factors.append(0)
+
+from functools import reduce
+from math import gcd
+def lcf(numbers):
+    # Use the 'reduce' function to apply a lambda function that calculates the LCF for a pair of numbers.
+    return reduce((lambda x, y: int(x * y / gcd(x, y))), numbers)
+
 while True:
     for i in inst:
         count += 1
         AllNodes = [dict[n + "-" + i][:3] for n in AllNodes]
 
-        print(count, AllNodes)
-        if AllNodes[0][2:] == 'Z' and all(i[2:] == AllNodes[0][2:] for i in AllNodes):
-            AllNodes = 0
-            break
+        for l, k in enumerate(AllNodes):
+            if k[2:] == 'Z' and factors[l] == 0:
+                factors[l] = count
 
-    if AllNodes == 0:
+    print(count, factors)
+    if not any(f == 0 for f in factors):
         break
 
-print("RESULT: ", count)
+print(lcf(factors))
 print('Time taken:', time.time() - start_time)
