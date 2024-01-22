@@ -8,10 +8,10 @@ start_time = time.time()
 from functools import lru_cache
 
 @lru_cache(maxsize=None)
-def roll(pre):
-    if 'O.' not in pre: return pre
-    rocks = pre.count('O')
-    return '.' * (len(pre) - rocks) + ('O' * rocks)
+def roll(row):
+    if 'O.' not in row: return row
+    rocks = row.count('O')
+    return '.' * (len(row) - rocks) + ('O' * rocks)
 
 @lru_cache(maxsize=None)
 def tilt(col):
@@ -22,30 +22,34 @@ def tilt(col):
     return new[:-1]
 
 start_time = time.time()
-tbl = [row.strip('\n') for row in open('Day14-demo.txt', 'r')]
+tbl = [row.strip('\n') for row in open('Day14-input.txt', 'r')]
+total = 0
+states = {}
 
-#SPIN CYCLE
-cycles = 1000000
-printcycles = int(cycles / 100)
-printcounter = 0
+cycles = 1000000000
+modu = None
 for c in range(cycles):
-    if (printcounter == printcycles):
-        try:
-            print(str(c/printcycles) + '%...')
-        except:
-            pass
-        printcounter = 0
-    printcounter += 1
-
+    if modu == None:
+        snapshot = hash(';'.join([i for i in tbl]))
+        if snapshot not in states:
+            states[snapshot] = c
+        else: #found first repeated state. run cycles until modulo hits 0
+            modu = (cycles - states[snapshot]) % (c - states[snapshot])
+    else:
+        modu -= 1
+    if modu == 0: break
+    
     #NORTH, WEST, SOUTH, EAST
     for j in range(4):
-        tbl = [list(i[::-1]) for i in zip(*tbl)]  #rotate (transpose & invert)
+        tbl = [''.join(i[::-1]) for i in zip(*tbl)]  #rotate (transpose & invert)
         for r, col in enumerate(tbl):
-            tbl[r] = tilt(''.join(col))
+            tbl[r] = tilt(col)
+print('')
+# for v in states.values():
+#     print(v)
 
-total = 0
-for val, col in enumerate(reversed(tbl)):
-    total += col.count('O') * (val + 1)
+for rownum, col in enumerate(reversed(tbl)):
+    total += col.count('O') * (rownum + 1)
 
 print(total)
 print('Time taken:', time.time() - start_time)
