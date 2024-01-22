@@ -13,6 +13,14 @@ def roll(pre):
     rocks = pre.count('O')
     return '.' * (len(pre) - rocks) + ('O' * rocks)
 
+@lru_cache(maxsize=None)
+def tilt(col):
+    if 'O.' not in col: return col
+    new = ''
+    for runway in col.split('#'):
+        new += roll(runway) + '#'
+    return new[:-1]
+
 start_time = time.time()
 tbl = [row.strip('\n') for row in open('Day14-demo.txt', 'r')]
 
@@ -29,37 +37,15 @@ for c in range(cycles):
         printcounter = 0
     printcounter += 1
 
-    #NORTH, WEST
-    for j in range(2):
-        tbl = [list(i) for i in zip(*tbl)]  #transpose
+    #NORTH, WEST, SOUTH, EAST
+    for j in range(4):
+        tbl = [list(i[::-1]) for i in zip(*tbl)]  #rotate (transpose & invert)
         for r, col in enumerate(tbl):
-            pre = ''.join(col[::-1])
-            if 'O.' not in pre: continue
-            col = ''
-            for runway in pre.split('#'):
-                col += roll(runway) + '#'
-            col = col[:-1]
-            tbl[r] = col[::-1]
-
-    #SOUTH, EAST
-    for j in range(2):
-        tbl = [list(i) for i in zip(*tbl)]  #transpose
-        for r, col in enumerate(tbl):
-            pre = ''.join(col)
-            if 'O.' not in pre: continue
-            col = ''
-            for runway in pre.split('#'):
-                col += roll(runway) + '#'
-            tbl[r] = col[:-1]
+            tbl[r] = tilt(''.join(col))
 
 total = 0
-for col in tbl:
-    print(''.join(col))
-    load = 0
-    for c in col[::-1]:
-        load += 1
-        if c == 'O':
-            total += load
+for val, col in enumerate(reversed(tbl)):
+    total += col.count('O') * (val + 1)
 
 print(total)
 print('Time taken:', time.time() - start_time)
