@@ -9,27 +9,15 @@ from functools import lru_cache
 
 @lru_cache(maxsize=None)
 def roll(pre):
-    if pre == '':
-        return post
-    
-    stop = pre.find('#')
-    if stop == -1:
-        roll(pre)
-    else:
-        roll(pre[stop:])
+    if 'O.' not in pre: return pre
+    rocks = pre.count('O')
+    return '.' * (len(pre) - rocks) + ('O' * rocks)
 
 start_time = time.time()
-tbl = []
-for i, row in enumerate(open('Day14-demo.txt', 'r')):
-    col = []
-    for c in row.strip('\n'):
-        col.append(c)
-    tbl.append(col)
-    print(''.join(col))
-print('')
+tbl = [row.strip('\n') for row in open('Day14-demo.txt', 'r')]
 
 #SPIN CYCLE
-cycles = 3
+cycles = 1000000
 printcycles = int(cycles / 100)
 printcounter = 0
 for c in range(cycles):
@@ -44,28 +32,25 @@ for c in range(cycles):
     #NORTH, WEST
     for j in range(2):
         tbl = [list(i) for i in zip(*tbl)]  #transpose
-#        newtbl = []
-        for col in tbl:
-            if 'O' not in col: continue
-            col = roll(''.join(col))    #col[::-1]
-
-            # stop = 0
-            # for k in range(len(col)):
-            #     if col[k] == 'O':
-            #         col.insert(stop, col.pop(k))
-            #     elif col[k] == '#':
-            #         stop = k + 1
+        for r, col in enumerate(tbl):
+            pre = ''.join(col[::-1])
+            if 'O.' not in pre: continue
+            col = ''
+            for runway in pre.split('#'):
+                col += roll(runway) + '#'
+            col = col[:-1]
+            tbl[r] = col[::-1]
 
     #SOUTH, EAST
     for j in range(2):
         tbl = [list(i) for i in zip(*tbl)]  #transpose
-        for col in tbl:
-            stop = len(col)
-            for k in reversed(range(len(col))):
-                if col[k] == 'O':
-                    col.insert(stop, col.pop(k))
-                elif col[k] == '#':
-                    stop = k - 1
+        for r, col in enumerate(tbl):
+            pre = ''.join(col)
+            if 'O.' not in pre: continue
+            col = ''
+            for runway in pre.split('#'):
+                col += roll(runway) + '#'
+            tbl[r] = col[:-1]
 
 total = 0
 for col in tbl:
