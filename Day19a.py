@@ -13,36 +13,31 @@ class part:
         c.a=a
         c.s=s
 
-file1 = open('Day19-input.txt', 'r')
-Lines = file1.readlines()
-Lines[:] = [line.strip() for line in Lines]
-
 parts = []
 fns = {}
-
 #parse txt file
-for line in Lines:
-    line = line.replace("}", "")
-    if line == "": continue
-    elif line[:1] == "{":   #add part
-        line = line.split(",")
-        line[:] = [l[l.find("=")+1:] for l in line]
+for line in open('Day19-demo.txt', 'r'):
+    line = line.strip().replace('}', '')
+    if line == '': continue
+    elif line[:1] == '{':   #add part
+        line = line.split(',')
+        line[:] = [l[l.find('=')+1:] for l in line]
         parts.append(part(int(line[0]), int(line[1]), int(line[2]), int(line[3])))
     else:   #add function
-        line = line.split("{")
+        line = line.split('{')
         fns[line[0]] = line[1]
 
 def parse_fn(x,m,a,s, fn):
-    fn = fn.split(",")
+    fn = fn.split(',')
     for f in fn[:-1]:
-        colon = f.find(":")
+        colon = f.find(':')
         if eval(f[:colon]):
             return f[colon+1:]
     return fn[-1]
 
 total = 0
 for part in parts:
-    fn = "in"
+    fn = 'in'
     while True:
         fn = parse_fn(part.x, part.m, part.a, part.s, fns[fn])
         print(part.x, fn)
@@ -50,7 +45,7 @@ for part in parts:
             print()
             break
 
-    if fn == "A":
+    if fn == 'A':
         total += (part.x + part.m + part.a + part.s)
 print(total)
 print('Time taken:', time.time() - start_time)
