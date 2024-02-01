@@ -17,23 +17,23 @@ parts = []
 fns = {}
 #parse txt file
 for line in open('Day19-demo.txt', 'r'):
-    line = line.strip().replace('}', '')
+    line = line.strip()
     if line == '': continue
-    elif line[:1] == '{':   #add part
-        line = line.split(',')
-        line[:] = [l[l.find('=')+1:] for l in line]
-        parts.append(part(int(line[0]), int(line[1]), int(line[2]), int(line[3])))
+    elif line[0] == '{':   #add part
+        line = [int(l[l.find('=')+1:]) for l in line[:-1].split(',')]
+        parts.append(part(line[0], line[1], line[2], line[3]))
     else:   #add function
         line = line.split('{')
-        fns[line[0]] = line[1]
+        fns[line[0]] = line[1][:-1]
 
 def parse_fn(x,m,a,s, fn):
-    fn = fn.split(',')
-    for f in fn[:-1]:
-        colon = f.find(':')
-        if eval(f[:colon]):
-            return f[colon+1:]
-    return fn[-1]
+    for f in fn.split(','):
+        try:
+            oper, output = f.split(':')
+            if eval(oper):
+                return output
+        except ValueError:  #use else output
+            return f
 
 total = 0
 for part in parts:

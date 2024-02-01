@@ -21,7 +21,7 @@ start_time = time.time()
 result = 0
 ''')
     fp.write("for row in open('Day" + str(i) + "-demo.txt', 'r'):\n")
-    fp.write('''  a, b = row.split()
+    fp.write('''    a, b = row.split()
 
 print('RESULT: ', result)
 print('Time taken:', time.time() - start_time)''')
